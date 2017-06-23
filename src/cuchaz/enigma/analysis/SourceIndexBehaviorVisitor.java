@@ -50,33 +50,34 @@ public class SourceIndexBehaviorVisitor extends SourceIndexVisitor {
 		MemberReference ref = node.getUserData(Keys.MEMBER_REFERENCE);
 		
 		// get the behavior entry
-		ClassEntry classEntry = new ClassEntry(ref.getDeclaringType().getInternalName());
-		BehaviorEntry behaviorEntry = null;
-		if (ref instanceof MethodReference) {
+		if (ref != null) {
+		    ClassEntry classEntry = new ClassEntry(ref.getDeclaringType().getInternalName());
+		    BehaviorEntry behaviorEntry = null;
+		    if (ref instanceof MethodReference) {
 			MethodReference methodRef = (MethodReference)ref;
 			if (methodRef.isConstructor()) {
-				behaviorEntry = new ConstructorEntry(classEntry, new Signature(ref.getErasedSignature()));
+			    behaviorEntry = new ConstructorEntry(classEntry, new Signature(ref.getErasedSignature()));
 			} else if (methodRef.isTypeInitializer()) {
-				behaviorEntry = new ConstructorEntry(classEntry);
+			    behaviorEntry = new ConstructorEntry(classEntry);
 			} else {
-				behaviorEntry = new MethodEntry(classEntry, ref.getName(), new Signature(ref.getErasedSignature()));
+			    behaviorEntry = new MethodEntry(classEntry, ref.getName(), new Signature(ref.getErasedSignature()));
 			}
-		}
-		if (behaviorEntry != null) {
+		    }
+		    if (behaviorEntry != null) {
 			// get the node for the token
 			AstNode tokenNode = null;
 			if (node.getTarget() instanceof MemberReferenceExpression) {
-				tokenNode = ((MemberReferenceExpression)node.getTarget()).getMemberNameToken();
+			    tokenNode = ((MemberReferenceExpression)node.getTarget()).getMemberNameToken();
 			} else if (node.getTarget() instanceof SuperReferenceExpression) {
-				tokenNode = node.getTarget();
+			    tokenNode = node.getTarget();
 			} else if (node.getTarget() instanceof ThisReferenceExpression) {
-				tokenNode = node.getTarget();
+			    tokenNode = node.getTarget();
 			}
 			if (tokenNode != null) {
-				index.addReference(tokenNode, behaviorEntry, m_behaviorEntry);
+			    index.addReference(tokenNode, behaviorEntry, m_behaviorEntry);
 			}
+		    }
 		}
-		
 		return recurse(node, index);
 	}
 	
