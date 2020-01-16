@@ -285,7 +285,9 @@ public class ClassSelector extends JTree {
 		for (ClassSelectorPackageNode packageNode : packageNodes()) {
 			for (ClassSelectorClassNode classNode : classNodes(packageNode)) {
 				if (classNode.getClassEntry().equals(classEntry)) {
-					setSelectionPath(new TreePath(new Object[] {getModel().getRoot(), packageNode, classNode}));
+					TreePath selectionPath = new TreePath(new Object[] {getModel().getRoot(), packageNode, classNode});
+					setSelectionPath(selectionPath);
+					scrollPathToVisible(selectionPath);
 				}
 			}
 		}

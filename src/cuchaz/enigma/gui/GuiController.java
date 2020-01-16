@@ -225,6 +225,9 @@ public class GuiController {
 		m_isDirty = true;
 		refreshClasses();
 		refreshCurrentClass(obfReference);
+		// FIXME select renamed class
+		m_gui.selectDeobfClass(newName);
+
 	}
 	
 	public void removeMapping(EntryReference<Entry,Entry> deobfReference) {

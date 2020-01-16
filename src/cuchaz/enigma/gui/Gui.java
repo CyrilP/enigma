@@ -723,6 +723,11 @@ public class Gui {
 		m_deobfClasses.setClasses(deobfClasses);
 	}
 	
+	public void selectDeobfClass(String path) {
+		m_deobfClasses.setExpandsSelectedPaths(true);
+		m_deobfClasses.setSelectionClass(new ClassEntry(path));
+	}
+	
 	public void setMappingsFile(File file) {
 		m_mappingsFileChooser.setSelectedFile(file);
 		m_saveMappingsMenu.setEnabled(file != null);
