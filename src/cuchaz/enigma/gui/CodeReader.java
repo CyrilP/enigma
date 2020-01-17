@@ -13,6 +13,7 @@ package cuchaz.enigma.gui;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.geom.Rectangle2D;
 
 import javax.swing.JEditorPane;
 import javax.swing.SwingUtilities;
@@ -162,10 +163,12 @@ public class CodeReader extends JEditorPane {
 		
 		try {
 			// make sure the token is visible in the scroll window
-			Rectangle start = editor.modelToView(token.start);
-			Rectangle end = editor.modelToView(token.end);
-			final Rectangle show = start.union(end);
-			show.grow(start.width * 10, start.height * 6);
+			Rectangle2D start = editor.modelToView2D(token.start);
+			Rectangle2D end = editor.modelToView2D(token.end);
+			final Rectangle show = new Rectangle();
+			Rectangle2D.union(start, end, show);
+			
+			show.grow((int) Math.round(start.getWidth()) * 10, (int) Math.round(start.getHeight()) * 6);
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {
