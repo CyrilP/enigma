@@ -358,4 +358,17 @@ public class GuiController {
 			}
 		}.start();
 	}
+	
+	public String inspectClass(EntryReference<Entry, Entry> m_reference) {
+		EntryReference<Entry,Entry> obfReference = m_deobfuscator.obfuscateReference(m_reference);
+
+		String inspectionResult = "";
+		try {
+			inspectionResult = m_deobfuscator.inspectClass(obfReference.entry.getName().replaceAll("/", "."));
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return inspectionResult;
+	}
 }

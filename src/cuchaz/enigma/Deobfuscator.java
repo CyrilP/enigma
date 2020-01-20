@@ -15,6 +15,8 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -38,6 +40,7 @@ import com.strobel.decompiler.languages.java.ast.AstBuilder;
 import com.strobel.decompiler.languages.java.ast.CompilationUnit;
 import com.strobel.decompiler.languages.java.ast.InsertParenthesesVisitor;
 
+import cuchaz.enigma.analysis.ClassUtils;
 import cuchaz.enigma.analysis.EntryReference;
 import cuchaz.enigma.analysis.JarClassIterator;
 import cuchaz.enigma.analysis.JarIndex;
@@ -75,6 +78,7 @@ public class Deobfuscator {
 	private Mappings m_mappings;
 	private MappingsRenamer m_renamer;
 	private Map<TranslationDirection,Translator> m_translatorCache;
+	private ClassLoader jarClassloader;
 	
 	public Deobfuscator(JarFile jar) throws IOException {
 		m_jar = jar;
@@ -97,6 +101,12 @@ public class Deobfuscator {
 		
 		// init mappings
 		setMappings(new Mappings());
+		
+		// Create classloader for jar classes
+		jarClassloader = new URLClassLoader(
+		        new URL[] {new File(getJarName()).toURI().toURL()},
+		        this.getClass().getClassLoader()
+		);
 	}
 	
 	public JarFile getJar() {
@@ -547,5 +557,9 @@ public class Deobfuscator {
 		
 		// clear caches
 		m_translatorCache.clear();
+	}
+	
+	public String inspectClass(String className) throws Exception {
+		return ClassUtils.showClassFields(className, jarClassloader);
 	}
 }

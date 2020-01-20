@@ -49,6 +49,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.KeyStroke;
@@ -107,6 +108,7 @@ public class Gui {
 	private JTree m_implementationsTree;
 	private JTree m_callsTree;
 	private JList<Token> m_tokens;
+	private JTextArea consolePanel;
 	private JTabbedPane m_tabs;
 	
 	// dynamic menu items
@@ -122,6 +124,7 @@ public class Gui {
 	private JMenuItem m_showCallsMenu;
 	private JMenuItem m_showImplementationsMenu;
 	private JMenuItem m_toggleMappingMenu;
+	private JMenuItem m_toggleInspectMenu;
 	private JMenuItem m_exportSourceMenu;
 	private JMenuItem m_exportJarMenu;
 	
@@ -252,6 +255,10 @@ public class Gui {
 					case KeyEvent.VK_T:
 						m_toggleMappingMenu.doClick();
 					break;
+					
+					case KeyEvent.VK_E:
+						m_toggleInspectMenu.doClick();
+					break;
 				}
 			}
 		});
@@ -353,6 +360,17 @@ public class Gui {
 			menu.setEnabled(false);
 			popupMenu.add(menu);
 			m_toggleMappingMenu = menu;
+		}
+		{
+			JMenuItem menu = new JMenuItem("Inspect class");
+			menu.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent event) {
+					inspectClass();
+				}
+			});
+			popupMenu.add(menu);
+			m_toggleInspectMenu = menu;
 		}
 		
 		// init inheritance panel
@@ -465,6 +483,13 @@ public class Gui {
 		callPanel.setResizeWeight(1); // let the top side take all the slack
 		callPanel.resetToPreferredSizes();
 		
+		// Console panel
+		
+		consolePanel = new JTextArea();
+		consolePanel.setLineWrap(true); //Makes the text wrap to the next line
+		consolePanel.setWrapStyleWord(true); //Makes the text wrap full words, not just letters
+		JScrollPane consolePane = new JScrollPane(consolePanel);
+		
 		// layout controls
 		JPanel centerPanel = new JPanel();
 		centerPanel.setLayout(new BorderLayout());
@@ -475,6 +500,7 @@ public class Gui {
 		m_tabs.addTab("Inheritance", inheritancePanel);
 		m_tabs.addTab("Implementations", implementationsPanel);
 		m_tabs.addTab("Call Graph", callPanel);
+		m_tabs.addTab("Console", consolePane);
 		JSplitPane splitRight = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, centerPanel, m_tabs);
 		splitRight.setResizeWeight(1); // let the left side take all the slack
 		splitRight.resetToPreferredSizes();
@@ -1076,6 +1102,17 @@ public class Gui {
 		} else {
 			m_controller.markAsDeobfuscated(m_reference);
 		}
+	}
+	
+	private void inspectClass() {
+		if (m_reference == null) {
+			return;
+		}
+		
+		if (m_reference.entry instanceof ClassEntry) {
+			consolePanel.setText(m_controller.inspectClass(m_reference));
+		}
+		m_tabs.setSelectedIndex(3);
 	}
 	
 	private TreePath getPathToRoot(TreeNode node) {
